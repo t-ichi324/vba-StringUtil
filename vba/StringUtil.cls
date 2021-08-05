@@ -140,14 +140,43 @@ Public Function TrimRight(ByVal v As Variant, Optional ByVal trimVal As String =
     TrimRight = str
 End Function
 
-'==============================================================================
-'正規表現のパターンにマッチするかどうか
-'==============================================================================
-Public Function FormatDate(Optional ByVal resultFormat As String = "yyyyMMdd", Optional ByVal d As Date) As String
-    If IsMissing(d) Then
-        d = Now
+'===========================================================
+' 日付チェック
+' 西暦 YYYYMMDD形式
+'===========================================================
+Public Function isYMD(ByVal v As Variant) As Boolean
+On Error GoTo ex
+    isYMD = False
+    
+    Dim str As String: str = Me.ToString(v)
+    If str = "" Then
+        isYMD = True
+        Exit Function
     End If
-    FormatDate = Format(d, resultFormat)
+    
+    'フォーマットチェック
+    If Not Me.IsNumber(str) Then Exit Function
+    If Not Me.Length(str) = 8 Then Exit Function
+    
+    Dim yyyy As String
+    Dim mm As String
+    Dim dd As String
+    
+    yyyy = Mid(str, 1, 4)
+    mm = Mid(str, 5, 2)
+    dd = Mid(str, 7, 2)
+
+    '日付形式ではない場合
+    If Not IsDate(yyyy & "/" & mm & "/" & dd) Then
+        Exit Function
+    End If
+    
+    If CInt(yyyy) < 1900 Then
+        Exit Function
+    End If
+    
+    isYMD = True
+ex:
 End Function
 
 '==============================================================================
@@ -359,4 +388,3 @@ Public Function ToArray(ParamArray args() As Variant) As String()
     Next i
     ToArray = ary
 End Function
-
